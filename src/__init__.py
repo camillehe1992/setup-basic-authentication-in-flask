@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(
     __name__, static_folder="../swagger/static", template_folder="../swagger/templates"
 )
-app.config.from_object(config("APP_SETTINGS"))
+app.config.from_object(config("APP_SETTINGS", default="src.config.DevelopmentConfig"))
 
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
