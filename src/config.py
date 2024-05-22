@@ -9,7 +9,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = config("SECRET_KEY", default="placeholder")
-    SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = config("DATABASE_URL", default="placeholder")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     BCRYPT_LOG_ROUNDS = 13
     WTF_CSRF_ENABLED = True

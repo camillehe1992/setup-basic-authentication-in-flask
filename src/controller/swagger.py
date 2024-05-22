@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app as app
+from flask import Blueprint, render_template
 
 swagger_bp = Blueprint("swagger", __name__)
 
