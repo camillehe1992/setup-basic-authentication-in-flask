@@ -1,22 +1,10 @@
 import unittest
 from flask.cli import FlaskGroup
-from flask import render_template, request, jsonify
 from src import app
 
-# app.app_context().push()
+app.app_context().push()
 
 cli = FlaskGroup(app)
-
-
-@app.route("/")
-def get_root():
-    return render_template("index.html")
-
-
-@app.route("/api/docs")
-def get_docs():
-    print("sending docs")
-    return render_template("swaggerui.html")
 
 
 @cli.command("test")

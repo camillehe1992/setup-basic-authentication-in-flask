@@ -15,5 +15,11 @@ migrate = Migrate(app, db)
 
 # Registering blueprints
 from .controller.system import system_bp
+from .controller.swagger import swagger_bp
 
 app.register_blueprint(system_bp)
+app.register_blueprint(swagger_bp)
+
+# Import all models for migration under model folder
+# Note: YOU NEED TO import new model file in model/__init__.py so that it can be detected by migration process
+from .model import *
