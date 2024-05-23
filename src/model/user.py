@@ -1,8 +1,12 @@
-from .. import db, bcrypt
+from sqlalchemy_serializer import SerializerMixin
+from src import db, bcrypt
 
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     """User Model for storing user related details"""
+
+    serialize_only = ("public_id", "email", "username", "is_admin", "is_confirmed")
+    serialize_rules = ()
 
     __tablename__ = "user"
 

@@ -1,29 +1,264 @@
 openapi: 3.0.0
 info:
   version: 0.0.1
-  title: Flask Rest API
-  description: An API to return hello in requested language
+  title: Flask RestAPI
+  description: >
+    A Python web server that provides login/register rest api functionalities based on Flask freamwork.
+
+servers:
+  - url: http://localhost:5000
 
 paths:
-  /api:
+  /system/health:
     get:
       tags:
-        - Hello
-      description: Returns hello in specified language
-      parameters:
-        - in: query
-          name: lang
-          required: true
-          description: language
-          schema:
-            type: string
-            example: es
-
+        - System
+      summary: System health status
+      operationId: systemHealth
       responses:
         "200":
-          description: hello in the requested language
+          description: System health status
           content:
             text/plain:
               schema:
                 type: string
-                example: hola
+                example: SERVER IS UP!
+  /system/info:
+    get:
+      tags:
+        - System
+      summary: System detail information
+      operationId: systemInfo
+      responses:
+        "200":
+          description: System related information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SystemInfo"
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: User login.
+      operationId: login
+      requestBody:
+        description: Login required fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginPayload"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Response"
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: New user registeration.
+      operationId: register
+      requestBody:
+        description: Register required fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterPayload"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Response"
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      summary: User logout.
+      operationId: logout
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Response"
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Gets a list of users.
+      operationId: listUsers
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [user, admin]
+          required: true
+          example: user
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+    post:
+      tags:
+        - Users
+      summary: Add a new user.
+      operationId: addUser
+      requestBody:
+        description: New user required fields
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewUserPayload"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /users/{id}:
+    get:
+      # security:
+      #   - bearerAuth: []
+      tags:
+        - Users
+      summary: Gets a user by id.
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          example: 5fb64a5a-afb3-4119-8eba-1a222978de8e
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  schemas:
+    SystemInfo:
+      type: object
+      properties:
+        version:
+          type: string
+          example: 0.0.1
+        build_platform:
+          type: string
+          example: macosx-14-arm64
+        environment:
+          type: string
+          enum:
+            - dev
+            - test
+            - prod
+          example: dev
+        timestamp:
+          type: string
+          example: 23/05/2024, 10:17:32
+    LoginPayload:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+    RegisterPayload:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - email
+    Response:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: string
+      required:
+        - message
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+        is_admin:
+          type: boolean
+        is_confirmed:
+          type: boolean
+      required:
+        - username
+        - email
+        - is_admin
+        - is_confirmed
+    NewUserPayload:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
