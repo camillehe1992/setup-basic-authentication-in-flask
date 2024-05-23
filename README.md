@@ -68,4 +68,10 @@ To see all the commands that are available run this command:
 flask db --help
 ```
 
-## 
+## Testing
+
+Run below command to execute unit test cases.
+
+```bash
+python app.py test
+```

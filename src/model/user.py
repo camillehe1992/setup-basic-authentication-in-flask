@@ -7,12 +7,13 @@ class User(db.Model):
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    registered_on = db.Column(db.DateTime, nullable=False)
-    admin = db.Column(db.Boolean, nullable=False, default=False)
     public_id = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(50), unique=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=False, nullable=False)
     password_hash = db.Column(db.String(100))
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    is_confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    registered_on = db.Column(db.DateTime, nullable=False)
 
     @property
     def password(self):
@@ -26,4 +27,4 @@ class User(db.Model):
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return "<User '{}'>".format(self.username)
+        return "<User '{}'>".format(self.email)

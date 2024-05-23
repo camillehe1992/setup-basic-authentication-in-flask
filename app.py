@@ -1,10 +1,15 @@
 import unittest
 from flask.cli import FlaskGroup
-from src import app
+from src import app, utils
 
 app.app_context().push()
 
 cli = FlaskGroup(app)
+
+
+@cli.command("create_admin")
+def create_admin():
+    utils.create_admin()
 
 
 @cli.command("test")
