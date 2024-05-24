@@ -5,7 +5,6 @@ from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-
 app = Flask(
     __name__, static_folder="../swagger/static", template_folder="../swagger/templates"
 )
@@ -15,9 +14,6 @@ app.config.from_object(config("APP_SETTINGS", default="src.config.DevelopmentCon
 log_level = logging.DEBUG if app.config["DEBUG"] else logging.INFO
 app.logger.setLevel(level=log_level)
 logger = app.logger
-# Add below lines in the top of file where you want to use logger
-# from src import logger
-# logger.info("this is a info message")
 
 # Integrate with packages
 bcrypt = Bcrypt(app)

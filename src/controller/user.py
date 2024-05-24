@@ -10,13 +10,12 @@ def list_all_users():
     return get_all_users()
 
 
-@user_bp.route("/", methods=["POST"])
+@user_bp.route("/", methods=["POST", "OPTIONS"])
 def create_user():
-    payload = request.json
-    logger.debug("Create new user with payload", {"payload": payload})
-    return save_new_user(data=payload)
+    data = request.json
+    return save_new_user(data=data)
 
 
-@user_bp.route("/<id>", methods=["GET"])
-def get_user(id):
-    return get_a_user(id=id)
+@user_bp.route("/<public_id>", methods=["GET"])
+def get_user(public_id):
+    return get_a_user(public_id=public_id)

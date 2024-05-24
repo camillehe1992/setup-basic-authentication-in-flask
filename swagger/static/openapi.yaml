@@ -81,6 +81,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Response"
+
   /auth/logout:
     get:
       tags:
@@ -142,18 +143,20 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
-  /users/{id}:
+        "409":
+          description: User already exists
+  /users/{public_id}:
     get:
       # security:
       #   - bearerAuth: []
       tags:
         - Users
-      summary: Gets a user by id.
+      summary: Gets a user by public id.
       operationId: getUserById
       parameters:
-        - name: id
+        - name: public_id
           in: path
-          description: User ID
+          description: User public id
           example: 5fb64a5a-afb3-4119-8eba-1a222978de8e
           required: true
           schema:
@@ -168,7 +171,8 @@ paths:
                 $ref: "#/components/schemas/User"
         "401":
           $ref: "#/components/responses/UnauthorizedError"
-
+        "404":
+          description: A user with the specified public_id was not found
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -218,6 +222,7 @@ components:
           type: string
         email:
           type: string
+          format: email
       required:
         - username
         - email
@@ -227,19 +232,20 @@ components:
         message:
           type: string
         data:
-          type: string
+          type: object
       required:
         - message
     User:
       type: object
       properties:
-        id:
+        public_id:
           type: string
           format: uuid
         username:
           type: string
         email:
           type: string
+          format: email
         is_admin:
           type: boolean
         is_confirmed:
@@ -254,10 +260,14 @@ components:
       properties:
         username:
           type: string
+          example: Test User
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
+          example: pass123
       required:
         - username
         - email
