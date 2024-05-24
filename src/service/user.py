@@ -5,14 +5,6 @@ from src import db, logger
 from src.model import User
 
 
-def login_user(data):
-    pass
-
-
-def logout_user(data):
-    pass
-
-
 def save_new_user(data):
     email = data["email"]
     logger.debug(f"Create new user with email {email}")
@@ -28,10 +20,13 @@ def save_new_user(data):
             registered_on=datetime.now(UTC),
         )
         save_changes(new_user)
-        response_object = {"message": "Successfully registered."}
+        logger.info("Successfully registered.")
+        response_object = {"status": "success", "message": "Successfully registered."}
         return response_object, 201
     else:
+        logger.error("User already exists. Please Log in.")
         response_object = {
+            "status": "fail",
             "message": "User already exists. Please Log in.",
         }
         return response_object, 409

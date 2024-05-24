@@ -52,13 +52,16 @@ paths:
               $ref: "#/components/schemas/LoginPayload"
       responses:
         "200":
-          description: Successful operation
+          description: Successfully logged in
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/Response"
+        "401":
+          description: email or password does not match
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /auth/register:
     post:
       tags:
@@ -74,31 +77,40 @@ paths:
               $ref: "#/components/schemas/RegisterPayload"
       responses:
         "200":
-          description: Successful operation
+          description: Successfully registered
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Response"
-
+                $ref: "#/components/schemas/Response"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "409":
+          description: User already exists
   /auth/logout:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Auth
       summary: User logout.
       operationId: logout
       responses:
         "200":
-          description: Successful operation
+          description: Successfully logged out
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/Response"
+        "401":
+          description: Token blacklisted or expired or invalid
+        "403":
+          description: Provide a valid auth token
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /users:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Gets a list of users.
@@ -123,6 +135,8 @@ paths:
         "401":
           $ref: "#/components/responses/UnauthorizedError"
     post:
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Add a new user.
@@ -147,8 +161,8 @@ paths:
           description: User already exists
   /users/{public_id}:
     get:
-      # security:
-      #   - bearerAuth: []
+      security:
+        - bearerAuth: []
       tags:
         - Users
       summary: Gets a user by public id.
@@ -173,6 +187,7 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           description: A user with the specified public_id was not found
+
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -182,6 +197,8 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
+    InternalServerError:
+      description: An expected error
   schemas:
     SystemInfo:
       type: object
@@ -205,14 +222,14 @@ components:
     LoginPayload:
       type: object
       properties:
-        username:
-          type: string
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
+          example: pass123
       required:
-        - username
         - email
         - password
     RegisterPayload:
@@ -220,21 +237,29 @@ components:
       properties:
         username:
           type: string
+          example: Test User
         email:
           type: string
           format: email
+        password:
+          type: string
+          format: password
+          example: pass123
       required:
         - username
         - email
     Response:
       type: object
       properties:
+        status:
+          type: string
         message:
           type: string
         data:
           type: object
       required:
         - message
+        - status
     User:
       type: object
       properties:

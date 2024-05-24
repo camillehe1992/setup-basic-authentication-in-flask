@@ -2,7 +2,7 @@ from src import db
 from src.model import BlacklistToken
 
 
-def save_token(token):
+def blacklist_token(token):
     blacklist_token = BlacklistToken(token=token)
     try:
         # insert the token
@@ -12,4 +12,4 @@ def save_token(token):
         return response_object, 200
     except Exception as e:
         response_object = {"status": "fail", "message": e}
-        return response_object, 200
+        return response_object, 500

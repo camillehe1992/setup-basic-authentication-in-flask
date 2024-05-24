@@ -42,7 +42,7 @@ class User(db.Model, SerializerMixin):
         """
         try:
             payload = {
-                "exp": datetime.now(UTC) + timedelta(days=1, seconds=5),
+                "exp": datetime.now(UTC) + timedelta(hours=1),
                 "iat": datetime.now(UTC),
                 "sub": public_id,
             }
