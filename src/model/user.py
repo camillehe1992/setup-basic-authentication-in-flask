@@ -1,5 +1,10 @@
 from sqlalchemy_serializer import SerializerMixin
+from datetime import datetime, timedelta, UTC
+import jwt
+
 from src import db, bcrypt
+from src.config import key
+from src.model.blacklist import BlacklistToken
 
 
 class User(db.Model, SerializerMixin):
@@ -29,6 +34,40 @@ class User(db.Model, SerializerMixin):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
+
+    def encode_auth_token(self, public_id):
+        """
+        Generates the Auth Token
+        :return: string
+        """
+        try:
+            payload = {
+                "exp": datetime.now(UTC) + timedelta(days=1, seconds=5),
+                "iat": datetime.now(UTC),
+                "sub": public_id,
+            }
+            return jwt.encode(payload, key, algorithm="HS256")
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Decodes the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, key, algorithms=["HS256"])
+            is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
+            if is_blacklisted_token:
+                return "Token blacklisted. Please log in again."
+            else:
+                return payload["sub"]
+        except jwt.ExpiredSignatureError:
+            return "Signature expired. Please log in again."
+        except jwt.InvalidTokenError:
+            return "Invalid token. Please log in again."
 
     def __repr__(self):
         return "<User '{}'>".format(self.email)

@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request
+
 from src import bcrypt, logger
 from src.service.user import login_user, logout_user, save_new_user, save_changes
-from src.model.user import User
+from src.model import User
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")

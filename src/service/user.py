@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, UTC
 
 from src import db, logger
-from src.model.user import User
+from src.model import User
 
 
 def login_user(data):

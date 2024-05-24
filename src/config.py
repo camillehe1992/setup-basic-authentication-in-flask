@@ -37,3 +37,6 @@ class ProductionConfig(Config):
     ENVIRONMENT = "prod"
     DEBUG = False
     DEBUG_TB_ENABLED = False
+
+
+key = Config.SECRET_KEY
